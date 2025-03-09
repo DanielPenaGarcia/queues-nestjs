@@ -17,6 +17,7 @@
       "@entities/*": ["src/entities/*"],
       "@logger/*": ["src/logger/*"],
       "@security/*": ["src/security/*"],
+      "@shared/*": ["src/shared/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

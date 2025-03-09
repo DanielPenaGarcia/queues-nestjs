@@ -16,6 +16,10 @@ export class Movie extends AbstractEntity {
     @Column({ type: 'varchar', length: 255, nullable: false })
     isAvailable: boolean;
 
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    posterUrl: string
+
     @OneToMany(() => Showing, screenMovie => screenMovie.movie)
     showings: Showing[];
+
 }

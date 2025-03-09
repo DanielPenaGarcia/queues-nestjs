@@ -1,0 +1,1 @@
+export const ALPHABETIC_CHARACTERS_REGEX = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;

@@ -2,10 +2,10 @@ import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-
 import { routes } from './app.routes';
 import { PrimeNGConfiguration } from '@core/configurations';
 import { provideHttpClient } from '@angular/common/http';
+import { SessionProvider } from '@core/providers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,6 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     providePrimeNG(PrimeNGConfiguration),
-    provideHttpClient()
+    provideHttpClient(),
+    SessionProvider,
   ],
 };

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '@core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -25,9 +26,10 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('@layouts/common/common.component').then((m) => m.CommonComponent),
+    canActivate: [authGuard],
     children: [
       {
-        path: '',
+        path: 'home',
         loadComponent: () =>
           import('@pages/movies/movies.component').then((m) => m.MoviesComponent),
       },

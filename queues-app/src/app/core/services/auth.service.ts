@@ -12,7 +12,7 @@ import { SignUp } from './interfaces/sign-up.interface';
 })
 export class AuthService {
 
-  public session$: EventEmitter<Session> = new EventEmitter<Session>(); 
+  public session$: EventEmitter<Session> = new EventEmitter<Session>();
 
   constructor(private readonly http: HttpClient, private readonly storage: StorageService) { }
 

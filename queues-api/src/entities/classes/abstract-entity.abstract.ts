@@ -1,7 +1,9 @@
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export abstract class AbstractEntity {
-    @PrimaryGeneratedColumn({ type: 'v'})
+    @PrimaryGeneratedColumn('uuid', {
+        name: "id"
+    })
     id: string;
 
     @CreateDateColumn({ type: 'timestamp', name: 'created_at' })

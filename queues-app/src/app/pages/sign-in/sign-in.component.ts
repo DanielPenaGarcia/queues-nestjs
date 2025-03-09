@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog'
 import { AuthService } from '@core/services';
 import { Credentials, User } from '@core/interfaces';
+import { authGuard } from '@core/guards/auth.guard';
 
 
 @Component({
@@ -35,13 +36,13 @@ export class SignInComponent implements OnInit {
 
   private initForm() {
     this.loginForm = this.fb.group({
-      username: [],
+      email: [],
       password: [],
     });
   }
 
-  get username(): FormControl {
-    return this.loginForm.get('username') as FormControl;
+  get email(): FormControl {
+    return this.loginForm.get('email') as FormControl;
   }
 
   get password(): FormControl {

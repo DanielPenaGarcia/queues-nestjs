@@ -2,15 +2,14 @@ import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { StorageService } from './storage.service';
 import { Session } from './interfaces';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SessionService {
 
-  constructor(private readonly auth: AuthService, private readonly storage: StorageService) {
-    this.init();
-  }
+  constructor(private readonly auth: AuthService, private readonly storage: StorageService, private readonly router: Router) {}
 
   init() {
     this.subscribeToSession();
@@ -28,6 +27,9 @@ export class SessionService {
 
   private saveSession(session: Session) {
     this.storage.saveSession(session);
+    const url = this.storage.getRedirectUrl() || '/home';
+    this.router.navigate([url], { replaceUrl: true });
+    this.storage.removeRedirectUrl();
   }
 
   private removeSession() {
