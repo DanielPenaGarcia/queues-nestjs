@@ -4,6 +4,8 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule }
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog'
+import { AuthService } from '@core/services';
+import { Credentials, User } from '@core/interfaces';
 
 
 @Component({
@@ -20,11 +22,12 @@ import { DialogModule } from 'primeng/dialog'
   styleUrl: './sign-in.component.css',
 })
 export class SignInComponent implements OnInit {
-  display: boolean;
+
+  loading: boolean = false;
 
   loginForm: FormGroup;
 
-  constructor(private readonly fb: FormBuilder) {}
+  constructor(private readonly fb: FormBuilder, private readonly auth: AuthService) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -45,5 +48,22 @@ export class SignInComponent implements OnInit {
     return this.loginForm.get('password') as FormControl;
   }
 
-  onSubmit() {}
+  onSubmit() {
+    this.loading = true;
+    if (this.loginForm.invalid) {
+      this.loading = false;
+      return;
+    }
+    const credentials: Credentials = this.loginForm.value;
+    this.auth.signIn(credentials).subscribe({
+      next: (user: User) => {
+        this.loading = false;
+        console.log(user);
+      },
+      error: (error) => {
+        this.loading = false;
+        console.error(error);
+      }
+    })
+  }
 }

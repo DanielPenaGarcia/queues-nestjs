@@ -1,24 +1,25 @@
 import { Injectable } from '@angular/core';
-import { User } from '@core/interfaces';
+import { Session } from './interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
 
-  private USER_KEY = "USER";
+  private SESSION_KEY = "SESSION";
 
   constructor() { }
 
-  getUser(): User {
-    return JSON.parse(localStorage.getItem(this.USER_KEY));
+  saveSession(session: Session): void {
+    localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
   }
 
-  setUser(user: User): void {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  getSession(): Session {
+    return JSON.parse(localStorage.getItem(this.SESSION_KEY));
   }
 
-  removeAll(): void {
-    localStorage.clear();
+  removeSession(): void {
+    localStorage.removeItem(this.SESSION_KEY);
   }
+
 }

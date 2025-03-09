@@ -1,8 +1,8 @@
 import { PrimeNGConfigType } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
+import Material from '@primeng/themes/material';
 
 export const PrimeNGConfiguration: PrimeNGConfigType = {
   theme: {
-    preset: Aura,
+    preset: Material,
   },
 };
