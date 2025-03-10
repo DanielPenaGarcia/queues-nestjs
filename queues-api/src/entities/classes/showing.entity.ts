@@ -7,7 +7,7 @@ import { Ticket } from "./ticket.entity.entity";
 @Entity({ name: 'showings' })
 export class Showing extends AbstractEntity {
 
-    @ManyToOne(() => Screen, screen => screen.showings)
+    @ManyToOne(() => Screen, screen => screen.showings, { cascade: ['insert'] })
     screen: Screen;
 
     @ManyToOne(() => Movie, movie => movie.showings)

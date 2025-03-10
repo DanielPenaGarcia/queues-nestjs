@@ -1,8 +1,11 @@
 import { PrimeNGConfigType } from 'primeng/config';
-import Material from '@primeng/themes/material';
+import { MyPreset } from '@core/presets';
 
 export const PrimeNGConfiguration: PrimeNGConfigType = {
   theme: {
-    preset: Material,
+    preset: MyPreset,
+    options: {
+      darkModeSelector: false || 'none',
+    },
   },
 };

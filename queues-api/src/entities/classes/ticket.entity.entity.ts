@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne } from "typeorm";
 import { AbstractEntity } from "./abstract-entity.abstract";
 import { User } from "./user.entity";
 import { Showing } from "./showing.entity";
+import { Seat } from "./seat.entity";
 
 @Entity({ name: 'tickets' })
 export class Ticket extends AbstractEntity {
@@ -17,6 +18,9 @@ export class Ticket extends AbstractEntity {
     
     @ManyToOne(() => User, user => user.tickets)
     user: User;
+
+    @ManyToOne(() => Seat)
+    seats: Seat;
 
     @ManyToOne(() => Showing, showing => showing.tickets)
     showing: Showing;

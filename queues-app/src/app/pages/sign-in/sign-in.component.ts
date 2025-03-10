@@ -6,7 +6,6 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog'
 import { AuthService } from '@core/services';
 import { Credentials, User } from '@core/interfaces';
-import { authGuard } from '@core/guards/auth.guard';
 
 
 @Component({
