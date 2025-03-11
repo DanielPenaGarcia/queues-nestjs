@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany } from "typeorm";
 import { AbstractEntity } from "./abstract-entity.abstract";
 import { Showing } from "./showing.entity";
+import { MovieLanguage } from "./movie-language.entity";
 
 @Entity({ name: 'movies' })
 export class Movie extends AbstractEntity {
@@ -22,4 +23,6 @@ export class Movie extends AbstractEntity {
     @OneToMany(() => Showing, screenMovie => screenMovie.movie)
     showings: Showing[];
 
+    @OneToMany(() => MovieLanguage, movieLanguage => movieLanguage.movie, { cascade: ['insert'] })
+    movieLanguages: MovieLanguage[];
 }

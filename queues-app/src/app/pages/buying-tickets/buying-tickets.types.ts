@@ -15,4 +15,16 @@ export interface MovieDTO {
   duration: number;
   isAvailable: boolean;
   posterUrl: string;
+  movieLanguages: MovieLanguageDTO[];
+}
+
+export interface MovieLanguageDTO {
+  id: string;
+  type: string;
+  language: LanguageDTO;
+}
+
+export interface LanguageDTO {
+  id: string;
+  name: string;
 }

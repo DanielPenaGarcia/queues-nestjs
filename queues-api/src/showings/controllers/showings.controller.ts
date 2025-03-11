@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ShowingsService } from '../services/showings.service';
 import { Showing } from '@entities/classes/showing.entity';
 
@@ -8,6 +8,11 @@ export class ShowingsController {
 
     @Get()
     async findAllShowings(): Promise<Showing[]> {
-        return this.showingsService.findAllShowings();
+        return await this.showingsService.findAllShowings();
+    }
+
+    @Get('movie/:movieId/language/:languageId')
+    async findAllShowingsByMovieIdAndLanguageId(@Param('movieId') movieId: string, @Param('languageId') languageId: string) {
+        return await this.showingsService.findShowingByMovieIdAndLanguageId(movieId, languageId);
     }
 }

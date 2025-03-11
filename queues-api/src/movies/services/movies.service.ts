@@ -4,22 +4,45 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { FindAllMoviesDTO } from '../inputs/find-all-movies.query';
 import { MoviesPageDTO } from '../outputs/movies-page';
+import { Language } from '@entities/classes/language.entity';
 
 @Injectable()
 export class MoviesService {
     
-    constructor(@InjectRepository(Movie) private readonly moviesRepository: Repository<Movie>){}
+    constructor(@InjectRepository(Movie) private readonly moviesRepository: Repository<Movie>, @InjectRepository(Language) private readonly languagesService: Repository<Language>){}
 
     async findMovieById(id: string, query?: any): Promise<Movie> {
       const movie: Movie | null = await this.moviesRepository.findOne({
         where: {
           id: id
+        },
+        relations: {
+          movieLanguages: {
+            language: true
+          }
         }
       });
       if (!movie) {
         throw new NotFoundException(`Movie with ${id} does not exist`);
       }
       return movie;
+    }
+
+    async findLanguagesByMovieId(movieId: string): Promise<Language[]> {
+      return await this.languagesService.find({
+        where: {
+          movieLanguages: {
+            movie: {
+              id: movieId
+            }
+          }
+        },
+        relations: {
+          movieLanguages: {
+            movie: true
+          }
+        }
+      })
     }
 
     async findMovies(query: FindAllMoviesDTO): Promise<MoviesPageDTO> {

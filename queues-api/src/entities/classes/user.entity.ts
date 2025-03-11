@@ -11,7 +11,7 @@ export class User extends AbstractUser {
     @Column({ type: 'varchar', length: 255, nullable: false })
     lastNames: string;
 
-    @ManyToOne(() => Sex)
+    @ManyToOne(() => Sex, { cascade: ['insert'] })
     sex: Sex;
 
     @OneToMany(() => Ticket, ticket => ticket.user)

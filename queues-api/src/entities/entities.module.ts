@@ -7,9 +7,11 @@ import { Screen } from './classes/screen.entity';
 import { Showing } from './classes/showing.entity';
 import { Ticket } from './classes/ticket.entity.entity';
 import { Seat } from './classes/seat.entity';
+import { Language } from './classes/language.entity';
+import { MovieLanguage } from './classes/movie-language.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([User, Sex, Movie, Screen, Showing, Ticket, Seat])],
+    imports: [TypeOrmModule.forFeature([User, Sex, Movie, Screen, Showing, Ticket, Seat, Language, MovieLanguage])],
     exports: [TypeOrmModule]
 })
 export class EntitiesModule {}

@@ -7,8 +7,11 @@ export class Seat extends AbstractEntity {
     @Column({ type: 'varchar', length: 10, nullable: false })
     row: string;
 
-    @Column({ type: 'int', nullable: true })
-    position: number | null;
+    @Column({ type: 'varchar', nullable: true })
+    value: string | null;
+
+    @Column({ type: 'int', nullable: false })
+    position: number;
 
     @ManyToOne(() => Screen, screen => screen.seats, { cascade: ['insert']})
     screen: Screen;

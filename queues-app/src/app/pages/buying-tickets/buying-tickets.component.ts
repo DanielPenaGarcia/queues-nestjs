@@ -3,10 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { MovieDTO, ShowingDTO } from './buying-tickets.types';
 import { BuyingTicketsService } from './buying-tickets.service';
 import { ActivatedRoute } from '@angular/router';
+import { ShowingComponent } from "../../components/showing/showing.component";
 
 @Component({
   selector: 'app-buying-tickets',
-  imports: [CommonModule],
+  imports: [CommonModule, ShowingComponent],
   templateUrl: './buying-tickets.component.html',
   styleUrl: './buying-tickets.component.css'
 })
