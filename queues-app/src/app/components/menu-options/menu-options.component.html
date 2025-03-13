@@ -1,0 +1,10 @@
+<div class="flex flex-col">
+  <p-button [style]="{ padding: 0 }" (click)="menu.toggle($event)" variant="text">
+    @if(user) {
+      <p-avatar [label]="user.names[0]" shape="square" />
+    } @else {
+      <p-avatar icon="pi pi-user" shape="square" />
+    }
+  </p-button>
+  <p-tieredmenu #menu [model]="options" [popup]="true" />
+</div>

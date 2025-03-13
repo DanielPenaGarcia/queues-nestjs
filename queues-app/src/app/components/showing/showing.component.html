@@ -4,6 +4,7 @@
       <div
         *ngFor="let showing of showings"
         class="p-3 bg-white rounded-lg shadow-sm border border-gray-200 flex items-center justify-center cursor-pointer transform transition duration-300 hover:scale-102"
+        (click)="selectShowing(showing.id)"
       >
         <i class="pi pi-clock text-green-500 text-lg mr-2"></i>
         <span class="text-gray-700 font-medium">{{

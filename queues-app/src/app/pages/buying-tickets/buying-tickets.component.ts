@@ -1,52 +1,60 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { MovieDTO, ShowingDTO } from './buying-tickets.types';
-import { BuyingTicketsService } from './buying-tickets.service';
 import { ActivatedRoute } from '@angular/router';
-import { ShowingComponent } from "../../components/showing/showing.component";
+import { BuyingTicketsService } from './buying-tickets.service';
+import { SectionDTO, ShowingDTO } from './buying-tickets.types';
+import { SectionComponent } from "../../components/section/section.component";
+import { PurchaseService } from '@core/services/purchase.service';
 
 @Component({
   selector: 'app-buying-tickets',
-  imports: [CommonModule, ShowingComponent],
+  imports: [CommonModule, SectionComponent],
   templateUrl: './buying-tickets.component.html',
-  styleUrl: './buying-tickets.component.css'
+  styleUrl: './buying-tickets.component.css',
 })
 export class BuyingTicketsComponent implements OnInit {
+  showing: ShowingDTO;
+  sections: SectionDTO[];
+  inProgress = false;
 
-  showings: ShowingDTO[];
-  movie: MovieDTO;
-
-
-  constructor(private readonly buyingTicketsService: BuyingTicketsService, private readonly activatedRoute: ActivatedRoute) {}
+  constructor(
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly buyingTicketsService: BuyingTicketsService,
+    private readonly purchaseService: PurchaseService
+  ) {}
 
   ngOnInit() {
-    this.getMovieInfo();
-    this.getShowings();
+    this.loadShowing();
+    this.purchaseService.purchasesSubject.subscribe((hasPurchases) => {
+      this.inProgress = hasPurchases;
+    });
   }
 
-  private getMovieInfo(): void {
-    this.buyingTicketsService.getMovieById(this.movieId).subscribe({
-      next: (movie: MovieDTO) => {
-        this.movie = movie;
+  loadShowing() {
+    this.buyingTicketsService.findShowingById(this.showingId).subscribe({
+      next: (showing) => {
+        this.showing = showing;
+        this.sections = showing.screen.seats.reduce((acc, seat) => {
+          const section = acc.find((s) => s.row === seat.row);
+          if (section) {
+            section.seats.push(seat);
+          } else {
+            acc.push({
+              id: seat.row,
+              row: seat.row,
+              seats: [seat],
+            });
+          }
+          return acc;
+        }, []);
       },
-      error: (error: any) => {
+      error: (error) => {
         console.error(error);
-      }
-    })
-  }
-
-  private getShowings(): void {
-    this.buyingTicketsService.getShowings().subscribe({
-      next: (showings: ShowingDTO[]) => {
-        this.showings = showings;
       },
-      error: (error: any) => {
-        console.error(error);
-      }
-    })
+    });
   }
 
-  private get movieId(): string {
-    return this.activatedRoute.snapshot.paramMap.get('id');
+  get showingId() {
+    return this.activatedRoute.snapshot.paramMap.get('showing');
   }
 }

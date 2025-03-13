@@ -34,6 +34,7 @@ export class SessionService {
 
   private removeSession() {
     this.storage.removeSession();
+    this.router.navigate(['/home'], { replaceUrl: true });
   }
 
 }

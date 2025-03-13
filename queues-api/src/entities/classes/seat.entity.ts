@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { AbstractEntity } from "./abstract-entity.abstract";
 import { Screen } from "./screen.entity";
+import { Ticket } from "./ticket.entity.entity";
 
 @Entity({ name: 'seats' })
 export class Seat extends AbstractEntity {
@@ -15,4 +16,7 @@ export class Seat extends AbstractEntity {
 
     @ManyToOne(() => Screen, screen => screen.seats, { cascade: ['insert']})
     screen: Screen;
+
+    @OneToMany(() => Ticket, ticket => ticket.seat)
+    tickets: Ticket[]
 }

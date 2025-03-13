@@ -1,30 +1,40 @@
-export interface ScreenDTO {
-  id: number;
-  name: string;
-}
-
-export interface ShowingDTO {
-  id: number;
-  screen: ScreenDTO;
-}
-
 export interface MovieDTO {
-  id: string;
   name: string;
   description: string;
   duration: number;
   isAvailable: boolean;
   posterUrl: string;
-  movieLanguages: MovieLanguageDTO[];
 }
 
-export interface MovieLanguageDTO {
-  id: string;
-  type: string;
-  language: LanguageDTO;
-}
-
-export interface LanguageDTO {
+export interface ScreenDTO {
   id: string;
   name: string;
+  seats: SeatDTO[];
+}
+
+export interface SeatDTO {
+  id: string;
+  row: string;
+  value: string | null;
+  position: number;
+}
+
+export interface TicketDTO {
+  token: string;
+  seat: string;
+  row: string;
+}
+
+export interface ShowingDTO {
+  id: string;
+  movie: MovieDTO;
+  screen: ScreenDTO;
+  tickets: TicketDTO[];
+}
+
+
+export interface SectionDTO {
+  id: string;
+  row: string;
+  seats: SeatDTO[];
 }

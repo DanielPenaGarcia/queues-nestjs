@@ -1,34 +1,8 @@
-<div class="container mx-auto p-6">
-  <div *ngIf="movie" class="bg-white shadow-lg rounded-lg p-6 flex gap-6">
-    <img
-      [src]="movie.posterUrl"
-      alt="{{ movie.name }}"
-      class="w-48 h-auto rounded-lg shadow-md"
-    />
-    <div>
-      <h1 class="text-3xl font-bold text-gray-800">{{ movie.name }}</h1>
-      <p class="text-gray-600 mt-2">{{ movie.description }}</p>
-      <p class="text-gray-500 mt-2">Duración: {{ movie.duration }} min</p>
-      <p class="text-green-600 font-semibold mt-2" *ngIf="movie.isAvailable">
-        Disponible
-      </p>
-      <p class="text-red-600 font-semibold mt-2" *ngIf="!movie.isAvailable">
-        No Disponible
-      </p>
-    </div>
+<div class="flex flex-col items-center justify-start">
+  <div class="w-full bg-blue-900 flex items-center justify-center text-white text-xl sm:text-2xl font-bold h-16 mx-2 my-3 rounded-b-2xl" [style]="inProgress ? { background: 'red' } : {}">
+    <span>Pantalla</span>
   </div>
-
-  <div *ngIf="showings?.length > 0" class="mt-6">
-    <h2 class="text-2xl font-semibold text-gray-800">Funciones disponibles</h2>
-    <ul class="mt-4 space-y-4">
-      <li *ngFor="let language of movie.movieLanguages">
-        <h3 class="text-lg font-semibold text-gray-800">{{ language.language.name }}</h3>
-        <app-showing [movieId]="movie.id" [language]="language.language"></app-showing>
-      </li>
-    </ul>
-  </div>
-
-  <div *ngIf="showings?.length === 0" class="mt-6 text-gray-600">
-    No hay funciones disponibles para esta película.
+  <div class="scale-40 sm:scale-50 md:scale-60 lg:scale-70 xl:scale-80 2xl:scale-100">
+    <app-section *ngFor="let section of sections" [section]="section"></app-section>
   </div>
 </div>

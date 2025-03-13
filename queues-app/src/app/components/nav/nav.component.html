@@ -1,1 +1,8 @@
-<p>nav works!</p>
+<p-menubar [model]="options">
+  <ng-template #start>
+    <img [src]="appIcon" alt="queue app" class="h-10 mr-2" />
+  </ng-template>
+  <ng-template #end>
+    <app-menu-options></app-menu-options>
+  </ng-template>
+</p-menubar>

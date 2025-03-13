@@ -5,9 +5,11 @@ import { Screen } from '@entities/classes/screen.entity';
 import { Seat } from '@entities/classes/seat.entity';
 import { Sex } from '@entities/classes/sex.entity';
 import { Showing } from '@entities/classes/showing.entity';
+import { Ticket } from '@entities/classes/ticket.entity.entity';
 import { User } from '@entities/classes/user.entity';
 import { MovieLanguageType } from '@entities/enums/movie-language-type.enum';
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -16,11 +18,13 @@ export class SeedService {
     constructor(
         @InjectRepository(Showing) private readonly showingRepository: Repository<Showing>, 
         @InjectRepository(Movie) private readonly moviesRepository: Repository<Movie>,
-        @InjectRepository(User) private readonly usersRepository: Repository<User>
+        @InjectRepository(User) private readonly usersRepository: Repository<User>,
+        @InjectRepository(Ticket) private readonly ticketsRepository: Repository<Ticket>,
+        private readonly jwtService: JwtService
 ) { }
 
     async seed(): Promise<void> {
-        await this.addUser();
+        // await this.addUser();
         const movie: Movie = await this.addMovie();
         const seats = this.createBasicSeats();
         const screen: Screen = new Screen();
@@ -30,6 +34,7 @@ export class SeedService {
         const showingTwo: Showing = this.showingRepository.create({ movie: movie, screen: screen, language: movie.movieLanguages[1].language, dateTime: new Date() });
         await this.showingRepository.save(showing);
         await this.showingRepository.save(showingTwo);
+        await this.generateTickets(seats, showing);
     }
 
     private async addUser(): Promise<User> {
@@ -91,5 +96,29 @@ export class SeedService {
         }
         return seats;
     }
+
+    async generateTickets(seats: Seat[], showing: Showing): Promise<void> {
+        const goodSeats = seats.filter((seat) => seat.value !== null);
+        const tickets: Ticket[] = goodSeats.map((seat) => {
+            const ticket: Ticket = new Ticket();
+            ticket.seat = seat;
+            ticket.showing = showing;
+            ticket.row = seat.row;
+            ticket.value = seat.value;
+            ticket.token = this.jwtService.sign({ seat: `${seat.row} | ${seat.value}` });
+            return ticket;
+        });
+        await this.ticketsRepository.save(tickets);
+    }
+
+    // async generateTickets(seats: Seat[], showing: Showing): Promise<void> {
+    //     seats.filter((seat) => seat.value !== null).map(async (seat) => {
+    //         const ticket: Ticket = new Ticket();
+    //         ticket.seat = seat;
+    //         ticket.showing = showing;
+    //         ticket.token = this.jwtService.sign({ seat: `${seat.row} | ${seat.value}` });
+    //         await this.ticketsRepository.save(ticket);
+    //     })
+    // }
 
 }

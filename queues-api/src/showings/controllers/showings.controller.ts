@@ -15,4 +15,9 @@ export class ShowingsController {
     async findAllShowingsByMovieIdAndLanguageId(@Param('movieId') movieId: string, @Param('languageId') languageId: string) {
         return await this.showingsService.findShowingByMovieIdAndLanguageId(movieId, languageId);
     }
+
+    @Get(':id')
+    async findShowing(@Param('id') id: string) : Promise<Showing> {
+        return await this.showingsService.findShowingById(id);
+    }
 }

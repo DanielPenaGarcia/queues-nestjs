@@ -1,5 +1,5 @@
 import { Showing } from '@entities/classes/showing.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -31,5 +31,48 @@ export class ShowingsService {
             }
         });
         return showings;
+    }
+
+    async findShowingById(showingId: string): Promise<Showing> {
+        const showing : Showing | null = await this.showingsRepository.findOne({
+            where: {
+                id: showingId
+            },
+            order: {
+                screen: {
+                    seats: {
+                        row: {
+                            direction: 'ASC'
+                        },
+                        position: {
+                            direction: 'ASC'
+                        }
+                    }
+                }
+            },
+            relations: {
+                movie: true,
+                screen: {
+                    seats: {
+                        tickets: true
+                    }
+                },
+                tickets: {
+                    user: true,
+                }
+            },
+            select: {
+                tickets: {
+                    user: {
+                        id: true
+                    }
+                }
+            }
+        });
+        if (!showing) {
+            throw new NotFoundException(`Showing with id ${showingId} does not exist`);
+        }
+        showing.screen.seats.map(seat => seat.tickets.find(ticket => ticket.showing.id === showingId));
+        return showing;
     }
  }

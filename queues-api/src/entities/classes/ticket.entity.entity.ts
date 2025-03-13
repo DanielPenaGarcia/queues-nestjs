@@ -11,7 +11,7 @@ export class Ticket extends AbstractEntity {
     token: string;
 
     @Column({ type: 'varchar', length: 255, nullable: false })
-    seat: string;
+    value: string | null;
     
     @Column({ type: 'varchar', length: 255, nullable: false })
     row: string;
@@ -20,7 +20,7 @@ export class Ticket extends AbstractEntity {
     user: User;
 
     @ManyToOne(() => Seat)
-    seats: Seat;
+    seat: Seat;
 
     @ManyToOne(() => Showing, showing => showing.tickets)
     showing: Showing;
