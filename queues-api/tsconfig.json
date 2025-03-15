@@ -17,7 +17,9 @@
       "@entities/*": ["src/entities/*"],
       "@logger/*": ["src/logger/*"],
       "@security/*": ["src/security/*"],
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["src/shared/*"],
+      "@utils/*": ["src/utils/*"],
+      "@queues/*": ["src/queues/*"],
     },
     "incremental": true,
     "skipLibCheck": true,

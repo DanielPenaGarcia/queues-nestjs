@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MovieDTO, ShowingDTO } from './movie-showings.types';
 import { MovieShowingsService } from './movie-showings.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ShowingComponent } from '../../components/showing/showing.component';
+import { ShowingDTO as ShowingComponentType } from 'src/app/components/showing/showing.types';
 
 @Component({
   selector: 'app-movie-showings',
@@ -16,7 +17,7 @@ export class MovieShowingsComponent implements OnInit {
   movie: MovieDTO;
 
   constructor(
-    private readonly moviesShowingsService: MovieShowingsService, private readonly activatedRoute: ActivatedRoute){}
+    private readonly moviesShowingsService: MovieShowingsService, private readonly activatedRoute: ActivatedRoute, private readonly router: Router) { }
 
   ngOnInit() {
     this.getMovieInfo();
@@ -43,6 +44,10 @@ export class MovieShowingsComponent implements OnInit {
         console.error(error);
       },
     });
+  }
+
+  onShowingClick(showing: ShowingComponentType): void {
+    this.router.navigate([`/movie/${this.movieId}/seats/${showing.id}`])
   }
 
   private get movieId(): string {

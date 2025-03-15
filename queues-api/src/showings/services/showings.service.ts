@@ -1,11 +1,12 @@
 import { Showing } from '@entities/classes/showing.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QueuesService } from '@queues/services/queues.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class ShowingsService {
-    constructor(@InjectRepository(Showing) private readonly showingsRepository: Repository<Showing>){}
+    constructor(@InjectRepository(Showing) private readonly showingsRepository: Repository<Showing>, private readonly queuesService: QueuesService){}
 
     async findAllShowings(): Promise<Showing[]> {
         return this.showingsRepository.find({
@@ -73,6 +74,7 @@ export class ShowingsService {
             throw new NotFoundException(`Showing with id ${showingId} does not exist`);
         }
         showing.screen.seats.map(seat => seat.tickets.find(ticket => ticket.showing.id === showingId));
+        this.queuesService.createQueue(showing.id);
         return showing;
     }
  }

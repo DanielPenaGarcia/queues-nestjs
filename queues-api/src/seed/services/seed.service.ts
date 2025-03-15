@@ -24,7 +24,7 @@ export class SeedService {
 ) { }
 
     async seed(): Promise<void> {
-        // await this.addUser();
+        await this.addUser();
         const movie: Movie = await this.addMovie();
         const seats = this.createBasicSeats();
         const screen: Screen = new Screen();

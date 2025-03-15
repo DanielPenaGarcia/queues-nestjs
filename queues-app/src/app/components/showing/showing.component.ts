@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { LanguageDTO, ShowingDTO } from './showing.types';
 import { ShowingService } from './showing.service';
 import { Router } from '@angular/router';
@@ -11,9 +11,11 @@ import { Router } from '@angular/router';
   styleUrl: './showing.component.css',
 })
 export class ShowingComponent implements OnInit {
+
   @Input() language: LanguageDTO;
   @Input() movieId: string;
   showings: ShowingDTO[];
+  @Output() click: EventEmitter<ShowingDTO> = new EventEmitter();
 
   constructor(
     private readonly showingService: ShowingService,
@@ -36,7 +38,8 @@ export class ShowingComponent implements OnInit {
     });
   }
 
-  selectShowing(showingId: string) {
-    this.router.navigate([`/movie/${this.movieId}/seats/${showingId}`]);
+  selectShowing(showing: ShowingDTO) {
+    this.click.emit(showing);
+    // this.router.navigate([`/movie/${this.movieId}/seats/${showingId}`]);
   }
 }

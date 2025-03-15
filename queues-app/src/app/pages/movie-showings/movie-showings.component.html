@@ -23,7 +23,7 @@
     <ul class="mt-4 space-y-4">
       <li *ngFor="let language of movie.movieLanguages">
         <h3 class="text-lg font-semibold text-gray-800">{{ language.language.name }}</h3>
-        <app-showing [movieId]="movie.id" [language]="language.language"></app-showing>
+        <app-showing [movieId]="movie.id" [language]="language.language" (click)="onShowingClick($event)"></app-showing>
       </li>
     </ul>
   </div>
