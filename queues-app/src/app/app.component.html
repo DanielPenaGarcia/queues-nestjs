@@ -1,0 +1,9 @@
+<input [(ngModel)]="festivalName" type="text">
+<button (click)="addFestival()">Add</button>
+
+<div *ngIf="festival">
+  <ul>
+    <li>{{festival.id}}</li>
+    <li>{{festival.name}}</li>
+  </ul>
+</div>
