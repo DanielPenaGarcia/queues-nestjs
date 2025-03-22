@@ -28,7 +28,6 @@ export class TurnsGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
   @SubscribeMessage('join')
   handleJoin(client: any, payload: any): string {
     client.join(payload.room);
-    console.log(client.rooms);
     return `Joined room ${payload.room}`;
   }
 

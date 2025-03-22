@@ -28,5 +28,5 @@ export class LineService {
         subscriber.next(data);
       });
     });
-  } 
+  }
 }
