@@ -6,17 +6,20 @@ import { Festival } from '@core/interfaces/festival.interface';
 import { LineService } from '@core/services/line.service';
 import { Job } from './models/job.interface';
 import { interval, takeWhile } from 'rxjs';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   providers: [AppService, LineService],
 })
 export class AppComponent implements OnInit {
   title = 'queues-app';
+  userId: string;
+  isBlocked: boolean = false;
   festivalName: WritableSignal<string> = signal('');
   appService: AppService = inject(AppService);
   lineService: LineService = inject(LineService);
@@ -28,7 +31,9 @@ export class AppComponent implements OnInit {
   showAddMinuteOption: boolean = false;
   minuteAdded: boolean = false;
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.userId = this.lineService.UserId;
+  }
 
   addFestival() {
     this.appService.createFestival({ name: this.festivalName() }).subscribe({
@@ -76,16 +81,7 @@ export class AppComponent implements OnInit {
     if (!this.jobId || this.minuteAdded) {
       return;
     }
-    this.appService.addMinute(this.jobId, this.festival.id).subscribe({
-      next: (job: Job) => {
-        this.timerValue.set(15);
-        this.showAddMinuteOption = false;
-        this.minuteAdded = true;
-      },
-      error: (error: Error) => {
-        console.error(error);
-      },
-    });
+    this.lineService.addMinute(this.jobId);
   }
 
   startTimer() {
@@ -123,5 +119,9 @@ export class AppComponent implements OnInit {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  }
+
+  blockUserId() {
+    this.isBlocked = true;
   }
 }

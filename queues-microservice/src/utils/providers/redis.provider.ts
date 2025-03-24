@@ -3,7 +3,7 @@ import { ConnectionConfiguration } from "src/configurations/redis.config";
 
 export const REDIS_OPTIONS = 'REDIS_OPTIONS';
 
-export const RedisProvider: Provider = {
+export const BullConnectionProvider: Provider = {
     provide: REDIS_OPTIONS,
     useValue: ConnectionConfiguration
 }

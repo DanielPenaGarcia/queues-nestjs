@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { FestivalsService } from './festivals.service';
 import { FestivalsController } from './festivals.controller';
-import { RedisProvider } from 'src/utils/providers/redis.provider';
+import { BullConnectionProvider } from 'src/utils/providers/redis.provider';
 import { EntitiesModule } from 'src/entities/entities.module';
-import { TurnsGateway } from 'src/turns/turns.gateway';
+import { LineGateway } from 'src/line/line.gateway';
 
 @Module({
   imports: [EntitiesModule],
   controllers: [FestivalsController],
-  providers: [FestivalsService, RedisProvider, TurnsGateway],
+  providers: [FestivalsService, BullConnectionProvider, LineGateway],
 })
 export class FestivalsModule {}

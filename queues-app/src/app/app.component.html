@@ -1,4 +1,16 @@
-<input placeholder="Festival" [(ngModel)]="festivalName" type="text" name="festival">
+<header>
+  <nav>
+    <a routerLink="queues/register">Registrar Colas</a>
+    <a routerLink="queues">Ver Colas</a>
+  </nav>
+  <div class="block-user">
+    <input type="text" [disabled]="isBlocked" placeholder="id" [(ngModel)]="userId">
+    <button [disabled]="isBlocked" (click)="blockUserId()">OK</button>
+  </div>
+</header>
+<router-outlet></router-outlet>
+
+<!-- <input placeholder="Festival" [(ngModel)]="festivalName" type="text" name="festival">
 <button type="button" (click)="addFestival()" id="festival">Add</button>
 
 <div *ngIf="festival">
@@ -18,4 +30,4 @@
 </div>
 <div *ngIf="showAddMinuteOption">
   <button type="button" (click)="addMinute()" [disabled]="minuteAdded">Add minute</button>
-</div>
+</div> -->
