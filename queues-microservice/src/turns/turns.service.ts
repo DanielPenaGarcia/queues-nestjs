@@ -15,7 +15,7 @@ export class TurnsService {
 
     async takeTurn(takeTurn: TakeTurnDTO): Promise<TurnTakedDTO> {
         const queue: Queue = new Queue(takeTurn.queue, { connection: this.bullConnection });
-        const job: Job = await Job.create(queue, 'turn', takeTurn.data, { removeOnComplete: true });
+        const job: Job = await queue.add('turn', takeTurn);
         return new TurnTakedDTO(job.id!);
     }
 

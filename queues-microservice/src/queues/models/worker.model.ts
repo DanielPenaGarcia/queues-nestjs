@@ -8,11 +8,11 @@ export class WorkerDTO {
 
     @IsNotEmpty({ message: 'expiresIn should not be empty.' })
     @Validate(IsStringOrNumber, { message: 'expiresIn must be a string or number.' })
-    expiresIn: string | number;
+    expiresIn: string;
 
     @IsOptional()
     @Validate(IsStringOrNumber, { message: 'additionalTime must be a string or number.' })
-    additionalTime: string | number | undefined;
+    additionalTime: string | undefined;
 
     @IsNumber()
     @IsNotEmpty()

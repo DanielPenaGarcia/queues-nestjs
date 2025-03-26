@@ -12,7 +12,9 @@ export class LineGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private eventEmitter: EventEmitter2){}
 
   handleConnection(client: any, ...args: any[]) {
+    console.log(`Número de listeners para TURN_STARTED: ${this.eventEmitter.listeners(TURN_STARTED).length}`);
     console.log('Connected');
+    this.server.emit('message', 'Hello world!');
   }
 
   handleDisconnect(client: any) {
@@ -29,6 +31,7 @@ export class LineGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('join')
   handleJoin(client: any, payload: any): string {
+    console.log('Joining room', payload.room);
     client.join(payload.room);
     return `Joined room ${payload.room}`;
   }
@@ -40,11 +43,16 @@ export class LineGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   sendToRoom(room: string, event: string, message: any) {
-    this.server.to(room).emit(event, message);
+    try {
+      this.server.to(room).emit(event, message);
+    } catch (error) {
+      console.error('Error sending to room', error);
+    }
   }
 
-  @OnEvent(TURN_STARTED, { async: true })
+  @OnEvent(TURN_STARTED)
   handleTurnInProgress(payload: TurnStartedDTO) {
-    // Send a message to the room
+    console.log('Turn started', payload);
+    this.sendToRoom(payload.takeTurn.room, `${TURN_STARTED}-${payload.queue}`, payload);
   }
 }

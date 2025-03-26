@@ -4,7 +4,6 @@ import { Festival } from 'src/entities/classes/festival.entity';
 import { REDIS_OPTIONS } from 'src/utils/providers/redis.provider';
 import { Repository } from 'typeorm';
 import { ConnectionOptions, Job, Processor, Queue, Worker } from 'bullmq';
-import { LineGateway } from 'src/line/line.gateway';
 import { COMPLETED, FAILED, PROGRESS } from '../utils/constants/bull-events.constant';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DataJob } from '../turns/models/data-job.model';
@@ -20,7 +19,6 @@ export class FestivalsService {
     private readonly festivalService: Repository<Festival>,
     @Inject(REDIS_OPTIONS)
     private readonly bullConnection: ConnectionOptions,
-    private readonly turnsGateway: LineGateway,
     private eventEmitter: EventEmitter2
   ) { }
 
@@ -29,7 +27,7 @@ export class FestivalsService {
     await this.festivalService.save(festival);
     this.createQueue(festival.id, async (job: Job<DataJob>) => {
       this.logger.log(`Proceso iniciado para ${job.id}`);
-      const data: TurnInProgressDTO = new TurnInProgressDTO(job.data.key, job.data.event);
+      const data: TurnInProgressDTO = new TurnInProgressDTO(job.data.listen, job.data.data);
       this.eventEmitter.emit('turn.in-progress', data);
       let delay = 0;
       this.eventEmitter.addListener(job.id!, () => {
@@ -79,11 +77,6 @@ export class FestivalsService {
     await this.delay(moreDelay);
     console.log(moreDelay);
     console.log(`Trabajo ${job.id} completado después de 10 segundos`);
-    try {
-      this.turnsGateway.sendToRoom(job.data.festivalId, job.id!, { message: 'FINALIZÓ' });
-    } catch (error) {
-      console.log(error.message)
-    }
   }
 
   private addListenersToWorker(worker: Worker): void {

@@ -1,10 +1,10 @@
 export class TurnInProgressDTO {
 
-    constructor(key: string, event: string){
-        this.key = key;
-        this.event = event;
+    constructor(listen: string, data: any){
+        this.listen = listen;
+        this.data = data;
     }
 
-    key: string;
-    event: string;
+    listen: string;
+    data: any;
 }

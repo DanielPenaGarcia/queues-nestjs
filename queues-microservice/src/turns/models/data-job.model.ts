@@ -1,4 +1,4 @@
 export class DataJob {
-    event: string;
-    key: string;
+    listen: string;
+    data: any;
 }

@@ -8,6 +8,6 @@ import { LineGateway } from 'src/line/line.gateway';
 @Module({
   imports: [EntitiesModule],
   controllers: [FestivalsController],
-  providers: [FestivalsService, BullConnectionProvider, LineGateway],
+  providers: [FestivalsService, BullConnectionProvider],
 })
 export class FestivalsModule {}

@@ -9,16 +9,25 @@ import { ConnectionOptions, Queue, Worker } from 'bullmq';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TURN_STARTED } from '../line/events/turn-started.event';
 import { TurnStartedDTO } from '../line/models/turn-started.model';
-import ms from 'ms';
+import * as ms from 'ms';
 import { ADD_TIME } from '../line/events/add-time.event';
 import { REDIS_OPTIONS } from '../utils/providers/redis.provider';
+import { WorkerEntity } from '../entities/classes/worker.entity';
 
 @Injectable()
 export class QueuesService {
     constructor(@InjectRepository(QueueEntity) private readonly queuesRepository: Repository<QueueEntity>, @Inject(REDIS_OPTIONS) private readonly bullConnection: ConnectionOptions, private readonly eventEmitter: EventEmitter2) { }
 
     async registerQueue(queueDTO: RegisterQueueDTO): Promise<QueueDTO> {
-        const queueEntity = this.queuesRepository.create({ name: queueDTO.name, expires: queueDTO.expires, workers: queueDTO.workers.length });
+        const workers: WorkerEntity[] = queueDTO.workers.map((workerDTO: WorkerDTO) => {
+            const workerEntity = new WorkerEntity();
+            workerEntity.name = workerDTO.name;
+            workerEntity.expiresIn = workerDTO.expiresIn;
+            workerEntity.additionalTime = workerDTO.additionalTime;
+            workerEntity.concurrency = workerDTO.concurrency;
+            return workerEntity;
+        })
+        const queueEntity = this.queuesRepository.create({ name: queueDTO.name, expires: queueDTO.expires, workers: workers });
         try {
             await this.queuesRepository.save(queueEntity);
         } catch (error) {
@@ -37,7 +46,7 @@ export class QueuesService {
     private createWorkers(queue: string, workersDTO: WorkerDTO[]): Worker[] {
         const workers: Worker[] = workersDTO.map(workerDTO => {
             const worker = new Worker(queue, async job => {
-                const turnStarted = new TurnStartedDTO();
+                const turnStarted = new TurnStartedDTO(job.id!, queue, job.data);
                 this.eventEmitter.emit(TURN_STARTED, turnStarted);
                 const additionalTime = workerDTO.additionalTime;
                 let addTime: boolean = false;
@@ -45,6 +54,7 @@ export class QueuesService {
                     addTime = true;
                 });
                 await this.delay(ms(workerDTO.expiresIn));
+                console.log(`Turn ${job.id} has expired.`);
                 this.eventEmitter.removeListener(ADD_TIME, () => { });
                 if (addTime) {
                     await this.delay(ms(additionalTime));
@@ -56,7 +66,14 @@ export class QueuesService {
     }
 
     private delay(seconds: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+        return new Promise(resolve => setTimeout(resolve, seconds));
     }
 
+    async initWorkers(): Promise<void> {
+        const queues = await this.queuesRepository.find();
+        queues.forEach(queue => {
+            const workers = this.createWorkers(queue.name, queue.workers);
+            workers.forEach(worker => worker.waitUntilReady());
+        });
+    }
 }

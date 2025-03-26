@@ -5,10 +5,10 @@ import { Join } from './interfaces/join-listener';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LineService {
-
+  private isAlreadyConnected: boolean = false;
   private userId: string;
   private socket: Socket;
   private url: string = `${environment.socket}/line`;
@@ -16,7 +16,12 @@ export class LineService {
   constructor() {}
 
   connect() {
+    if (this.isAlreadyConnected && this.socket && this.socket.connected) {
+      console.log('🔌 Ya conectado. No se creará una nueva conexión.');
+      return;
+    }
     this.socket = io(this.url);
+    this.isAlreadyConnected = true;
   }
 
   join(join: Join) {
@@ -28,8 +33,8 @@ export class LineService {
   }
 
   listen(event: string): Observable<any> {
-    return new Observable(subscriber => {
-      this.socket.on(event, data => {
+    return new Observable((subscriber) => {
+      this.socket.on(event, (data) => {
         subscriber.next(data);
       });
     });
