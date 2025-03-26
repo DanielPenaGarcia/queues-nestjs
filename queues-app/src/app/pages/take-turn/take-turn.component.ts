@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { QueuesService } from '@shared/services/queues.service';
-import { QueueDTO } from './take-turn.types';
+import { QueueDTO, TakeTurnDTO } from './take-turn.types';
 
 @Component({
   selector: 'app-take-turn',
@@ -28,5 +28,15 @@ export class TakeTurnComponent implements OnInit {
         console.error(error);
       }
     })
+  }
+
+  takeTurn(queue: QueueDTO) {
+    const body: TakeTurnDTO = {
+      queue: queue.name,
+      data: {
+        key: 'key',
+        event: 'event'
+      }
+    }
   }
 }

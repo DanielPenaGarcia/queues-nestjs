@@ -5,5 +5,14 @@ export interface QueueDTO {
 
 export interface TakeTurnDTO {
     queue: string;
-    data: any;
+    data: DataDTO;
+}
+
+export interface DataDTO {
+    key: string;
+    event: string;
+}
+
+export interface TurnTakedDTO {
+    jobId: string | number;
 }

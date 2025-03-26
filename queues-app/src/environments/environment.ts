@@ -1,5 +1,5 @@
 export const environment = {
-    api: 'http://localhost:3001',
-    socket: 'http://localhost:3001',
+    api: 'http://localhost:3000',
+    socket: 'http://localhost:3000',
     production: true
 };
