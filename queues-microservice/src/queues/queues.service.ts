@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { RegisterQueueDTO } from './models/inputs/register-queue.model';
 import { QueueDTO } from './models/queue.model';
 import { WorkerDTO } from './models/worker.model';
-import { ConnectionOptions, Queue, Worker } from 'bullmq';
+import { ConnectionOptions, Job, Queue, Worker } from 'bullmq';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TURN_STARTED } from '../line/events/turn-started.event';
 import { TurnStartedDTO } from '../line/models/turn-started.model';
@@ -13,10 +13,17 @@ import * as ms from 'ms';
 import { ADD_TIME } from '../line/events/add-time.event';
 import { REDIS_OPTIONS } from '../utils/providers/redis.provider';
 import { WorkerEntity } from '../entities/classes/worker.entity';
+import { TurnDTO } from '../turns/inputs/create-job.model';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class QueuesService {
-    constructor(@InjectRepository(QueueEntity) private readonly queuesRepository: Repository<QueueEntity>, @Inject(REDIS_OPTIONS) private readonly bullConnection: ConnectionOptions, private readonly eventEmitter: EventEmitter2) { }
+    constructor(
+        @InjectRepository(QueueEntity) private readonly queuesRepository: Repository<QueueEntity>,
+        @Inject(REDIS_OPTIONS) private readonly bullConnection: ConnectionOptions,
+        private readonly eventEmitter: EventEmitter2,
+        private readonly jwt: JwtService
+    ) { }
 
     async registerQueue(queueDTO: RegisterQueueDTO): Promise<QueueDTO> {
         const workers: WorkerEntity[] = queueDTO.workers.map((workerDTO: WorkerDTO) => {
@@ -45,9 +52,8 @@ export class QueuesService {
 
     private createWorkers(queue: string, workersDTO: WorkerDTO[]): Worker[] {
         const workers: Worker[] = workersDTO.map(workerDTO => {
-            const worker = new Worker(queue, async job => {
-                const turnStarted = new TurnStartedDTO(job.id!, queue, job.data);
-                this.eventEmitter.emit(TURN_STARTED, turnStarted);
+            const worker = new Worker(queue, async (job: Job<TurnDTO>) => {
+                this.emitTurnStartedByJob(job, workerDTO.expiresIn);
                 const additionalTime = workerDTO.additionalTime;
                 let addTime: boolean = false;
                 this.eventEmitter.addListener(ADD_TIME, () => {
@@ -75,5 +81,24 @@ export class QueuesService {
             const workers = this.createWorkers(queue.name, queue.workers);
             workers.forEach(worker => worker.waitUntilReady());
         });
+    }
+
+    private emitTurnStartedByJob(job: Job<TurnDTO>, expiresIn: string | number): void {
+        const turnStarted = new TurnStartedDTO();
+        turnStarted.event = `${TURN_STARTED}-${job.data.queue}`;
+        const expires: Date = this.addMillisecondsToCurrentDate(ms(expiresIn));
+        const token = this.jwt.sign({ ...job.data }, { expiresIn: expiresIn });
+        turnStarted.data = {
+            accessToken: token,
+            expires: expires,
+            payload: job.data,
+        };
+        this.eventEmitter.emit(TURN_STARTED, turnStarted);
+    }
+
+    addMillisecondsToCurrentDate(milliseconds: number): Date {
+        const now = new Date();
+        now.setMilliseconds(now.getMilliseconds() + milliseconds);
+        return now;
     }
 }

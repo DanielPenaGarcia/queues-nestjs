@@ -2,8 +2,6 @@ import { LineModule } from './line/line.module';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LineGateway } from './line/line.gateway';
-import { FestivalsModule } from './festivals/festivals.module';
 import { EntitiesModule } from './entities/entities.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeORMOptions } from './configurations/typeorm.config';
@@ -15,11 +13,11 @@ import { QueuesModule } from './queues/queues.module';
 import { ValidationPipeProvider } from './utils/providers/validation-pipe.provider';
 import { UtilsModule } from './utils/utils.module';
 import { QueuesService } from './queues/queues.service';
-import { TURN_STARTED } from './line/events/turn-started.event';
+import { SecurityModule } from './security/security.module';
 
 @Module({
   imports: [
-    LineModule, TypeOrmModule.forRoot(TypeORMOptions), JwtModule.register(JwtConfig), FestivalsModule, EntitiesModule, EventEmitterModule.forRoot(), TurnsModule, QueuesModule, UtilsModule],
+    LineModule, TypeOrmModule.forRoot(TypeORMOptions), JwtModule.register(JwtConfig), EntitiesModule, EventEmitterModule.forRoot(), TurnsModule, QueuesModule, UtilsModule, SecurityModule],
   controllers: [AppController],
   providers: [AppService, ValidationPipeProvider],
 })
@@ -29,6 +27,5 @@ export class AppModule implements OnModuleInit {
 
   onModuleInit() {
     this.queuesService.initWorkers();
-    console.log(`Número de listeners para TURN_STARTED: ${this.eventEmitter.listeners(TURN_STARTED).length}`);
   }
 }

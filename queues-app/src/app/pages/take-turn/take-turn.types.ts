@@ -1,23 +1,15 @@
 export interface QueueDTO {
-    name: string;
-    expires: Date;
+  id: string;
+  name: string;
+  expires: Date;
 }
 
 export interface TakeTurnDTO {
-    queue: string;
-    room: string;
-    data: DataDTO;
+  queue: string;
+  room: string;
+  data: any;
 }
 
-export interface DataDTO {
-    listen: string;
-    data: any;
-}
-
-export interface TurnTakedDTO {
-    jobId: string | number;
-}
-
-export interface TurnStartedDTO {
-  timestamp: Date;
+export interface TakeTurnResponseDTO {
+  jobId: string;
 }

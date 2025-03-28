@@ -7,14 +7,13 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { QueuesService } from '@shared/services/queues.service';
-import {
-  QueueDTO,
-  TakeTurnDTO,
-  TurnStartedDTO,
-  TurnTakedDTO,
-} from './take-turn.types';
+
 import { LineService } from '@core/services/line.service';
 import { TakeTurnService } from './take-turn.service';
+import { QueueDTO } from './take-turn.types';
+import { TurnStartedEventDTO } from '@core/services/interfaces/turn-started-event.interface';
+import { TURN_STARTED } from '@core/services/constants/events';
+import { StorageService } from '@core/services/storage.service';
 
 @Component({
   selector: 'app-take-turn',
@@ -23,11 +22,15 @@ import { TakeTurnService } from './take-turn.service';
   styleUrl: './take-turn.component.css',
 })
 export class TakeTurnComponent implements OnInit {
+
   queues: WritableSignal<QueueDTO[]> = signal([]);
 
   private readonly queuesService: QueuesService = inject(QueuesService);
   private readonly lineService: LineService = inject(LineService);
   private readonly takeTurnService: TakeTurnService = inject(TakeTurnService);
+  private readonly storage: StorageService = inject(StorageService);
+  showValidateToken: boolean = false;
+  validationMessage: string = '';
 
   ngOnInit() {
     this.lineService.connect();
@@ -46,44 +49,48 @@ export class TakeTurnComponent implements OnInit {
   }
 
   takeTurn(queue: QueueDTO) {
-    if (!this.lineService.UserId) {
-      alert('No hay un id asignado');
+    if (!this.userId) {
+      alert('No tienes una sesión iniciada. Por favor, inicia sesión para continuar.');
       return;
     }
-    this.addLineListener(queue);
-    const body: TakeTurnDTO = {
-      queue: queue.name,
-      room: this.lineService.UserId,
-      data: {
-        listen: this.lineService.UserId,
-        data: {
-          queue: queue.name,
-          userId: this.lineService.UserId,
-        },
-      },
-    };
-    this.takeTurnService.takeTurn(body).subscribe({
-      next: (turn: TurnTakedDTO) => {
-        console.log(turn);
+    this.lineService.join({ room: this.userId });
+    this.lineService.listen<TurnStartedEventDTO>(`${TURN_STARTED}-${queue.name}`).subscribe({
+      next: (response: TurnStartedEventDTO) => {
+        console.log('Turn started event received', response);
+        this.showValidateToken = true;
+        this.storage.setLineData({ accessToken: response.data.accessToken, expires: response.data.expires, payload: response.data.payload });
       },
       error: (error: Error) => {
-        alert('Error al tomar turno');
         console.error(error);
+      },
+    });
+    this.takeTurnService.takeTurn({ queue: queue.name, room: this.userId, data: {} }).subscribe({
+      next: (response: any) => {
+        console.log('Turn started successfully', response);
+      },
+      error: (error: Error) => {
+        console.error('Error taking turn', error);
+      },
+    });
+
+  }
+
+  validateToken() {
+    this.takeTurnService.validateToken().subscribe({
+      next: (response: any) => {
+        console.log('Token validated successfully', response);
+        this.validationMessage = 'Token validated successfully';
+      },
+      error: (error: Error) => {
+        console.error('Error validating token', error);
+        this.validationMessage = 'Error validating token';
       },
     });
   }
 
-  private addLineListener(queue: QueueDTO) {
-    this.lineService.join({ room: this.lineService.UserId });
-    this.lineService.listen(`TURN_STARTED-${queue.name}`).subscribe({
-      next: (data: TurnStartedDTO) => {
-        alert('Turno tomado');
-        console.log(data);
-      },
-      error: (error: Error) => {
-        console.error(error);
-      },
-    });
+  get userId(): string {
+    return this.lineService.UserId;
   }
+
 
 }

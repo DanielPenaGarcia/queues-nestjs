@@ -12,9 +12,7 @@ export class LineGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private eventEmitter: EventEmitter2){}
 
   handleConnection(client: any, ...args: any[]) {
-    console.log(`Número de listeners para TURN_STARTED: ${this.eventEmitter.listeners(TURN_STARTED).length}`);
-    console.log('Connected');
-    this.server.emit('message', 'Hello world!');
+    console.log('Connected', client.id);
   }
 
   handleDisconnect(client: any) {
@@ -29,7 +27,7 @@ export class LineGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return 'Hello world!';
   }
 
-  @SubscribeMessage('join')
+  @SubscribeMessage('JOIN')
   handleJoin(client: any, payload: any): string {
     console.log('Joining room', payload.room);
     client.join(payload.room);
@@ -42,9 +40,9 @@ export class LineGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return `Left room ${payload.room}`;
   }
 
-  sendToRoom(room: string, event: string, message: any) {
+  sendToRoom(room: string, event: string, data: any) {
     try {
-      this.server.to(room).emit(event, message);
+      this.server.to(room).emit(event, data);
     } catch (error) {
       console.error('Error sending to room', error);
     }
@@ -52,7 +50,6 @@ export class LineGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @OnEvent(TURN_STARTED)
   handleTurnInProgress(payload: TurnStartedDTO) {
-    console.log('Turn started', payload);
-    this.sendToRoom(payload.takeTurn.room, `${TURN_STARTED}-${payload.queue}`, payload);
+    this.sendToRoom(payload.data.payload.room, payload.event, payload);
   }
 }

@@ -14,7 +14,7 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  providers: [AppService, LineService],
+  providers: [AppService],
 })
 export class AppComponent implements OnInit {
   title = 'queues-app';
@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
   blockUserId() {
     if (this.userId) {
       this.lineService.UserId = this.userId;
+      this.lineService.join({ room: this.userId });
       this.isBlocked = true;
     }
   }

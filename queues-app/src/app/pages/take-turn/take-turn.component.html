@@ -1,3 +1,8 @@
 @let queuesData = queues();
 
 <button *ngFor="let queue of queuesData" (click)="takeTurn(queue)">{{queue.name}}</button>
+
+
+<button *ngIf="showValidateToken" (click)="validateToken()">Validar</button>
+
+<div>{{validationMessage}}</div>

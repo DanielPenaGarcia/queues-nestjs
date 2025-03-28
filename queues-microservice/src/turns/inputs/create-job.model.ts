@@ -1,7 +1,5 @@
-import { DataJob } from "../models/data-job.model";
-
-export class TakeTurnDTO {
+export class TurnDTO {
     queue: string;
     room: string;
-    data: DataJob;
+    data: any;
 }

@@ -1,3 +1,3 @@
-export interface Join {
+export interface JoinDTO {
     room: string;
 }

@@ -1,13 +1,21 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { TurnsService } from './turns.service';
-import { TakeTurnDTO } from './inputs/create-job.model';
+import { TurnDTO } from './inputs/create-job.model';
+import { TurnGuard } from '../security/guards/turn.guard';
 
 @Controller('turns')
 export class TurnsController {
   constructor(private readonly turnsService: TurnsService) {}
 
   @Post()
-  async takeTurn(@Body() body: TakeTurnDTO) {
-    return await this.turnsService.takeTurn(body);
+  async takeTurn(@Body() turn: TurnDTO) {
+    return await this.turnsService.takeTurn(turn);
+  }
+
+  @UseGuards(TurnGuard)
+  @Post('validate')
+  async validateToken(@Req() req: Request) {
+    const data = req['turn'];
+    return data;
   }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
 import { io, Socket } from 'socket.io-client';
-import { Join } from './interfaces/join-listener';
+import { JoinDTO } from './interfaces/join-listener';
 import { Observable } from 'rxjs';
+import { JOIN } from './constants/events';
 
 @Injectable({
   providedIn: 'root',
@@ -24,18 +25,18 @@ export class LineService {
     this.isAlreadyConnected = true;
   }
 
-  join(join: Join) {
-    this.socket.emit('join', join);
+  join(join: JoinDTO) {
+    this.socket.emit(JOIN, join);
   }
 
   addMinute(jobId: string) {
     this.socket.emit('add-minute', { jobId });
   }
 
-  listen(event: string): Observable<any> {
-    return new Observable((subscriber) => {
-      this.socket.on(event, (data) => {
-        subscriber.next(data);
+  listen<T>(event: string): Observable<T> {
+    return new Observable((observer) => {
+      this.socket.on(event, (data: T) => {
+        observer.next(data);
       });
     });
   }
